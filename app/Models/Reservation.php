@@ -8,7 +8,6 @@ class Reservation extends Model
 {
     protected $table = 'reservations';
 
-    // Colonnes autorisées à être remplies via create/update
     protected $fillable = [
         'client_id',
         'chambre_id',
@@ -18,15 +17,26 @@ class Reservation extends Model
         'statut'
     ];
 
-    // Relation avec le client
+    // Relation avec le client (User)
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(User::class, 'client_id');
     }
 
     // Relation avec la chambre
     public function chambre()
     {
         return $this->belongsTo(Chambre::class);
+    }
+
+    // Scopes utiles
+    public function scopeActive($query)
+    {
+        return $query->whereIn('statut', ['confirme', 'attente']);
+    }
+
+    public function scopeFuture($query)
+    {
+        return $query->where('date_arrivee', '>=', now());
     }
 }

@@ -2,69 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ClientsController extends Controller
 {
     public function index()
     {
-        $clients = Client::all();
-        return view('clients.index', compact('clients'));
+        $clients = User::where('role', 'client')->latest()->paginate(15);
+        return view('admin.clients.index', compact('clients'));
     }
 
     public function create()
     {
-        return view('clients.create');
+        return view('admin.clients.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nom' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email',
-            'mot_de_passe' => 'required|string|min:6',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
             'telephone' => 'nullable|string|max:20'
         ]);
 
-        Client::create($request->all());
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'client',
+            'telephone' => $request->telephone,
+        ]);
 
-        return redirect()->route('clients.index')
-                         ->with('success', 'Client ajouté avec succès.');
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Client ajouté avec succès.');
     }
 
     public function edit($id)
     {
-        $client = Client::findOrFail($id);
-        return view('clients.edit', compact('client'));
+        $client = User::where('role', 'client')->findOrFail($id);
+        return view('admin.clients.edit', compact('client'));
     }
 
     public function update(Request $request, $id)
     {
-        $client = Client::findOrFail($id);
+        $client = User::where('role', 'client')->findOrFail($id);
 
         $request->validate([
-            'nom' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email,'.$id,
-            'mot_de_passe' => 'nullable|string|min:6',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6',
             'telephone' => 'nullable|string|max:20'
         ]);
 
-        $data = $request->all();
-        if(empty($data['mot_de_passe'])){
-            unset($data['mot_de_passe']);
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'telephone' => $request->telephone,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
         }
 
         $client->update($data);
 
-        return redirect()->route('clients.index')
-                         ->with('success', 'Client mis à jour avec succès.');
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Client mis à jour avec succès.');
     }
 
     public function destroy($id)
     {
-        Client::destroy($id);
-        return redirect()->route('clients.index')
-                         ->with('success', 'Client supprimé avec succès.');
+        $client = User::where('role', 'client')->findOrFail($id);
+        
+        // Vérifier si le client a des réservations actives
+        if ($client->reservations()->whereIn('statut', ['confirme', 'attente'])->exists()) {
+            return back()->with('error', 'Impossible de supprimer ce client car il a des réservations actives.');
+        }
+
+        $client->delete();
+        
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Client supprimé avec succès.');
     }
 }
