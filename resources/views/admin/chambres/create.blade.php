@@ -8,7 +8,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.chambres.index') }}">Chambres</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('chambres.index') }}">Chambres</a></li>
                     <li class="breadcrumb-item active">Ajouter</li>
                 </ol>
             </nav>
@@ -144,7 +144,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Créer la chambre
                             </button>
-                            <a href="{{ route('admin.chambres.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('chambres.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Annuler
                             </a>
                         </div>

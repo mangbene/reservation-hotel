@@ -66,7 +66,7 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <a href="{{ route('admin.chambres.index') }}" class="text-decoration-none">
+            <a href="{{ route('chambres.index') }}" class="text-decoration-none">
                 <div class="card shadow-sm text-center h-100">
                     <div class="card-body">
                         <i class="bi bi-door-open text-primary" style="font-size: 2.5rem;"></i>

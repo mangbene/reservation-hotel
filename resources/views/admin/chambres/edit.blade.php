@@ -140,7 +140,7 @@
                             <button type="submit" class="btn btn-warning">
                                 <i class="bi bi-check-circle"></i> Mettre à jour
                             </button>
-                            <a href="{{ route('admin.chambres.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('chambres.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Annuler
                             </a>
                         </div>
